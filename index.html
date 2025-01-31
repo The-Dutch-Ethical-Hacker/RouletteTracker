@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Tracker</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        video { width: 100%; max-width: 600px; border: 2px solid #000; }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Roulette Tracker</h1>
+    
+    <label for="cameraSelect">📷 Kies Camera:</label>
+    <select id="cameraSelect">
+        <option value="environment">Achtercamera 📷</option>
+        <option value="user">Voorcamera 🤳</option>
+    </select>
+    
+    <br><br>
+    
+    <button onclick="startCamera()">Start Camera</button>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        async function startCamera() {
+            const video = document.getElementById('video');
+            const cameraSelect = document.getElementById('cameraSelect');
+            const selectedCamera = cameraSelect.value;
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: selectedCamera }
+                });
+
+                video.srcObject = stream;
+            } catch (error) {
+                alert("Camera-toegang geweigerd of niet beschikbaar.");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
