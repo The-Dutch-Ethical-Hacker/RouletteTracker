@@ -1,2 +1,2 @@
 # RouletteTracker
-Keep eye on the winnig number
+Keep an eye on the winnig number
