@@ -6,15 +6,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>RouletteTracker</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>RouletteTracker</title>
-    <link rel="stylesheet" href="style.css">
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        h2 {
+            color: #007BFF;
+        }
+
+        section {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        video {
+            border: 2px solid #007BFF;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #framesContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #framesContainer img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #statsDisplay {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,7 +102,8 @@
 
     <section id="videoSection">
         <h2>Bekijk de Roulette Video</h2>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </section>
 
     <section id="framesSection">
@@ -59,52 +131,64 @@
         <p>RouletteTracker © 2025</p>
     </footer>
 
-    <script src="script.js"></script>
-</body>
+    <script>
+        // Get video element and button for camera start
+        const videoElement = document.getElementById('video');
+        const startButton = document.getElementById('startButton');
+        const framesContainer = document.getElementById('framesContainer');
+        const statsDisplay = document.getElementById('statsDisplay');
 
-<body>
-    <header>
-        <h1>Welkom bij RouletteTracker</h1>
-        <p>Volg de bewegingen van het roulette-balletje in real-time en verbeter je voorspellingen!</p>
-    </header>
+        let stats = {
+            totalPredictions: 0,
+            correctPredictions: 0,
+            ballLocationPredictions: [],
+        };
 
-    <section id="camera">
-        <h2>Camera View</h2>
-        <video id="video" width="640" height="480" autoplay></video>
-        <button id="startButton">Start Camera</button>
-    </section>
+        // Start camera feed
+        startButton.addEventListener('click', () => {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    videoElement.srcObject = stream;
+                })
+                .catch((err) => {
+                    console.error("Camera access denied:", err);
+                });
+        });
 
-    <section id="videoSection">
-        <h2>Bekijk de Roulette Video</h2>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </section>
+        // Function to display frames (replace with actual frames if available)
+        function displayFrames() {
+            const framePath = 'frames/frame_'; // Assumed folder location of frames
+            for (let i = 1; i <= 10; i++) {
+                let imgElement = document.createElement('img');
+                imgElement.src = `${framePath}${i}.jpg`;
+                framesContainer.appendChild(imgElement);
+            }
+        }
 
-    <section id="framesSection">
-        <h2>Frames uit Video</h2>
-        <p>Bekijk enkele van de geanalyseerde frames:</p>
-        <div id="framesContainer">
-            <!-- Frames worden hier geladen met JavaScript -->
-        </div>
-    </section>
+        // Function to simulate ball detection and update stats
+        function updateStats(predictedLocation, actualLocation) {
+            stats.totalPredictions++;
+            if (predictedLocation === actualLocation) {
+                stats.correctPredictions++;
+            }
 
-    <section id="statistics">
-        <h2>Statistieken</h2>
-        <p>Volgende gegevens worden automatisch bijgehouden:</p>
-        <ul>
-            <li>Aantal voorspellingen</li>
-            <li>Aantal correcte voorspellingen</li>
-            <li>Voorspelde plaats van het balletje</li>
-        </ul>
-        <div id="statsDisplay">
-            <!-- Statistieken worden hier weergegeven via JavaScript -->
-        </div>
-    </section>
+            statsDisplay.innerHTML = `
+                <p>Totaal aantal voorspellingen: ${stats.totalPredictions}</p>
+                <p>Aantal correcte voorspellingen: ${stats.correctPredictions}</p>
+                <p>Voorspelde locatie van het balletje: ${predictedLocation}</p>
+            `;
+        }
 
-    <footer>
-        <p>RouletteTracker © 2025</p>
-    </footer>
+        // Simulate ball location prediction (in real use case, this would come from AI)
+        setInterval(() => {
+            const predictedLocation = Math.floor(Math.random() * 37); // Random number 0-36
+            const actualLocation = Math.floor(Math.random() * 37); // Random number 0-36 (for testing)
+            updateStats(predictedLocation, actualLocation);
+        }, 5000);
 
-    <script src="script.js"></script>
+        // Call displayFrames() to show initial frames when the page loads
+        displayFrames();
+    </script>
 </body>
 
 </html>
