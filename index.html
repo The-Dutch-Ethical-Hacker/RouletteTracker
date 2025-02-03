@@ -33,32 +33,11 @@
     .roulette-board {
       width: 400px;
       height: 400px;
-      background-image: url('roulette-wheel.jpg'); /* Replace with your roulette wheel image */
+      background-image: url('roulette-wheel.jpg'); /* Voeg hier je roulettewiel afbeelding in */
       background-size: cover;
       border-radius: 50%;
       position: relative;
       box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    }
-
-    .prediction, .surrounding-numbers {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .prediction h2 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .surrounding-numbers ul {
-      list-style-type: none;
-      padding: 0;
-      font-size: 18px;
-      color: #f2c12e;
-    }
-
-    .surrounding-numbers li {
-      margin: 5px 0;
     }
 
     .stats {
@@ -103,88 +82,49 @@
 
 <div class="container">
   <div class="roulette-board" id="rouletteWheel">
-    <!-- Placeholder for visual roulette wheel (use an image of the roulette wheel) -->
-  </div>
-
-  <div class="prediction">
-    <h2>Voorspelde Nummmer:</h2>
-    <p id="predictedNumber">35</p> <!-- Placeholder for predicted number -->
-  </div>
-
-  <div class="surrounding-numbers">
-    <h3>Omliggende Nummers:</h3>
-    <ul>
-      <li>33</li>
-      <li>36</li>
-      <li>34</li>
-    </ul>
+    <!-- Placeholder voor visueel roulettewiel -->
   </div>
 
   <div class="stats">
     <div class="stat-item">
       <p>Correcte Voorspellingen:</p>
-      <span id="correctPredictions">10</span>
+      <span id="correctPredictions">0</span>
     </div>
     <div class="stat-item">
       <p>Totaal Aantal Voorspellingen:</p>
-      <span id="totalPredictions">50</span>
+      <span id="totalPredictions">0</span>
     </div>
     <div class="stat-item">
       <p>Winstpercentage:</p>
-      <span id="winPercentage">20%</span>
+      <span id="winPercentage">0%</span>
     </div>
   </div>
 
-  <button class="button" id="predictButton">Voorspel Volgende Nummmer</button>
+  <button class="button" id="startButton">Start Volgen en Voorspellen</button>
 </div>
 
 <script>
-  // Placeholder voor voorspelling van het balletje en omliggende nummers
-  const predictedNumber = document.getElementById("predictedNumber");
-  const surroundingNumbers = document.querySelector(".surrounding-numbers ul");
-  const correctPredictions = document.getElementById("correctPredictions");
-  const totalPredictions = document.getElementById("totalPredictions");
-  const winPercentage = document.getElementById("winPercentage");
+  let correctCount = 0;
+  let totalCount = 0;
 
-  // Dummy data voor statistieken
-  let correctCount = 10;
-  let totalCount = 50;
-
-  // Update statistieken
   function updateStats() {
-    correctPredictions.textContent = correctCount;
-    totalPredictions.textContent = totalCount;
-    winPercentage.textContent = `${Math.round((correctCount / totalCount) * 100)}%`;
+    document.getElementById("correctPredictions").textContent = correctCount;
+    document.getElementById("totalPredictions").textContent = totalCount;
+    document.getElementById("winPercentage").textContent = `${Math.round((correctCount / totalCount) * 100)}%`;
   }
 
-  // Genereer een willekeurig nummer en omliggende nummers voor de voorspelling
-  function generatePrediction() {
-    let randomNumber = Math.floor(Math.random() * 36); // Aangenomen roulette nummers 0-36
-    predictedNumber.textContent = randomNumber;
+  document.getElementById("startButton").addEventListener("click", () => {
+    // Dit is een plaatsvervanger voor de logica die het systeem voorspellingen doet
+    // In de echte situatie zou dit communiceren met de backend voor automatische voorspellingen
+    const predictedNumber = Math.floor(Math.random() * 37);  // Simuleer een voorspelling
+    const actualNumber = Math.floor(Math.random() * 37); // Simuleer het werkelijke nummer
 
-    // Genereer omliggende nummers
-    let surrounding = [];
-    for (let i = -1; i <= 1; i++) {
-      let surroundingNumber = (randomNumber + i + 36) % 36; // Houd nummers binnen het bereik van 0-36
-      surrounding.push(surroundingNumber);
-    }
-
-    surroundingNumbers.innerHTML = surrounding.map(num => `<li>${num}</li>`).join('');
-  }
-
-  // Trigger voorspelling bij klikken op de knop
-  document.getElementById("predictButton").addEventListener("click", () => {
-    generatePrediction();
-    totalCount++;
-    // Simuleer een goede voorspelling (kan worden verbeterd met daadwerkelijke AI-berekeningen)
-    if (Math.random() < 0.2) { // 20% kans op een goede voorspelling
+    if (predictedNumber === actualNumber) {
       correctCount++;
     }
+    totalCount++;
     updateStats();
   });
-
-  // Initieel statistieken bijladen
-  updateStats();
 </script>
 
 </body>
