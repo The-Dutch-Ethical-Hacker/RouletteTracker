@@ -3,90 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RouletteTracker 🎰</title>
+    <title>Roulette Tracker</title>
     <style>
-        body {
-            background: radial-gradient(circle, #222, #111);
-            color: white;
-            text-align: center;
-            font-family: 'Arial', sans-serif;
-        }
-
-        h1 {
-            font-size: 36px;
-            color: gold;
-            text-shadow: 2px 2px 8px rgba(255, 215, 0, 0.8);
-        }
-
-        #casino-frame {
-            width: 90%;
-            max-width: 600px;
-            border: 8px solid gold;
-            border-radius: 10px;
-            padding: 10px;
-            background: linear-gradient(145deg, #5a0000, #8b0000);
-            box-shadow: 0px 0px 20px rgba(255, 215, 0, 0.5);
-            margin: 20px auto;
-        }
-
-        video {
-            width: 100%;
-            border: 3px solid gold;
-            border-radius: 5px;
-        }
-
-        canvas {
-            display: none;
-        }
-
-        .button {
-            background: gold;
-            color: black;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        .button:hover {
-            background: #ffd700;
-            box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.8);
-        }
-
-        #camera-toggle {
-            margin-top: 10px;
-        }
+        body { text-align: center; font-family: Arial, sans-serif; }
+        video { width: 100%; max-width: 600px; border: 2px solid #000; }
+        canvas { display: none; }
     </style>
 
-    <!-- OpenCV.js laden -->
+    <!-- Voeg OpenCV.js toe -->
     <script async src="https://docs.opencv.org/master/opencv.js"></script>
 </head>
 <body>
 
-    <h1>RouletteTracker 🎰</h1>
-
-    <div id="casino-frame">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
-        <p id="status">📷 Camera: UIT</p>
-        <button class="button" onclick="toggleCamera()">🎥 Start / Stop Camera</button>
-        <button class="button" id="camera-toggle" onclick="switchCamera()">🔄 Wissel Camera</button>
-    </div>
+    <h1>Roulette Balletje Tracker</h1>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
 
     <script>
-        let video = document.getElementById('video');
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let cameraActive = false;
-        let useFrontCamera = false; // Start met de achtercamera
-
+        // Wacht tot OpenCV is geladen
         function checkOpenCV() {
             if (cv && cv.getBuildInformation) {
-                console.log("✅ OpenCV.js geladen!");
+                console.log("✅ OpenCV.js is geladen!");
+                startCamera();
             } else {
                 console.log("⏳ Wachten op OpenCV...");
                 setTimeout(checkOpenCV, 1000);
@@ -94,46 +32,72 @@
         }
         checkOpenCV();
 
-        async function toggleCamera() {
-            if (cameraActive) {
-                stopCamera();
-            } else {
-                startCamera();
-            }
-        }
-
+        // Start de camera
         async function startCamera() {
+            const video = document.getElementById('video');
+
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: useFrontCamera ? "user" : "environment" } 
-                });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
                 video.srcObject = stream;
-                video.onloadeddata = () => { console.log("🎥 Camera gestart!"); };
-                cameraActive = true;
-                document.getElementById("status").innerText = "📷 Camera: AAN";
+                video.onloadeddata = () => { processFrame(); };
             } catch (error) {
                 alert("Camera-toegang geweigerd of niet beschikbaar.");
                 console.error(error);
             }
         }
 
-        function stopCamera() {
-            let stream = video.srcObject;
-            if (stream) {
-                let tracks = stream.getTracks();
-                tracks.forEach(track => track.stop());
-            }
-            video.srcObject = null;
-            cameraActive = false;
-            document.getElementById("status").innerText = "📷 Camera: UIT";
-        }
+        // Verwerk het camerabeeld
+        function processFrame() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
 
-        function switchCamera() {
-            useFrontCamera = !useFrontCamera;
-            if (cameraActive) {
-                stopCamera();
-                startCamera();
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            console.log("🎥 Beeld wordt verwerkt...");
+
+            // Zet het beeld om naar een OpenCV Mat
+            let src = cv.imread(canvas);
+            let gray = new cv.Mat();
+            let blurred = new cv.Mat();
+            let circles = new cv.Mat();
+
+            // Zet om naar grijs en pas een blur toe
+            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+            cv.GaussianBlur(gray, blurred, new cv.Size(9, 9), 2);
+
+            // Test: zwart-wit filter voor meer contrast
+            cv.threshold(gray, gray, 100, 255, cv.THRESH_BINARY);
+
+            // Detecteer cirkels (roulette balletje)
+            cv.HoughCircles(blurred, circles, cv.HOUGH_GRADIENT, 1, 20, 50, 30, 5, 50);
+
+            console.log("🔍 Aantal gevonden cirkels:", circles.rows);
+
+            // Teken gevonden cirkels
+            for (let i = 0; i < circles.rows; i++) {
+                let circle = circles.data32F.slice(i * 3, i * 3 + 3);
+                let x = circle[0];
+                let y = circle[1];
+                let radius = circle[2];
+
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 3;
+                ctx.stroke();
             }
+
+            // Opruimen
+            src.delete();
+            gray.delete();
+            blurred.delete();
+            circles.delete();
+
+            // Blijf frames verwerken
+            requestAnimationFrame(processFrame);
         }
     </script>
 
