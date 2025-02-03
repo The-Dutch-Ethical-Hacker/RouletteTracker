@@ -1,194 +1,191 @@
 <!DOCTYPE html>
-<html lang="nl">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>RouletteTracker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RouletteTracker - Casino Style</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #1d1f21;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
 
-        header {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    header {
+      background-color: #282828;
+      padding: 20px;
+      text-align: center;
+      font-size: 36px;
+      color: #f2c12e;
+      text-transform: uppercase;
+    }
 
-        h1 {
-            margin: 0;
-        }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px;
+      flex-direction: column;
+    }
 
-        h2 {
-            color: #007BFF;
-        }
+    .roulette-board {
+      width: 400px;
+      height: 400px;
+      background-image: url('roulette-wheel.jpg'); /* Replace with your roulette wheel image */
+      background-size: cover;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    }
 
-        section {
-            margin: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    .prediction, .surrounding-numbers {
+      margin-top: 20px;
+      text-align: center;
+    }
 
-        video {
-            border: 2px solid #007BFF;
-            border-radius: 8px;
-        }
+    .prediction h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
 
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+    .surrounding-numbers ul {
+      list-style-type: none;
+      padding: 0;
+      font-size: 18px;
+      color: #f2c12e;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+    .surrounding-numbers li {
+      margin: 5px 0;
+    }
 
-        #framesContainer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+    .stats {
+      background-color: #333;
+      padding: 15px;
+      width: 100%;
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-around;
+      color: #f2c12e;
+    }
 
-        #framesContainer img {
-            width: 150px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
+    .stat-item {
+      font-size: 20px;
+    }
 
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
+    .stat-item span {
+      font-weight: bold;
+    }
 
-        #statsDisplay {
-            background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-    </style>
+    .button {
+      background-color: #f2c12e;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      color: #1d1f21;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+
+    .button:hover {
+      background-color: #e5b30d;
+    }
+  </style>
 </head>
-
 <body>
-    <header>
-        <h1>Welkom bij RouletteTracker</h1>
-        <p>Volg de bewegingen van het roulette-balletje in real-time en verbeter je voorspellingen!</p>
-    </header>
 
-    <section id="camera">
-        <h2>Camera View</h2>
-        <video id="video" width="640" height="480" autoplay></video>
-        <button id="startButton">Start Camera</button>
-    </section>
+<header>
+  RouletteTracker
+</header>
 
-    <section id="videoSection">
-        <h2>Bekijk de Roulette Video</h2>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </section>
+<div class="container">
+  <div class="roulette-board" id="rouletteWheel">
+    <!-- Placeholder for visual roulette wheel (use an image of the roulette wheel) -->
+  </div>
 
-    <section id="framesSection">
-        <h2>Frames uit Video</h2>
-        <p>Bekijk enkele van de geanalyseerde frames:</p>
-        <div id="framesContainer">
-            <!-- Frames worden hier geladen met JavaScript -->
-        </div>
-    </section>
+  <div class="prediction">
+    <h2>Voorspelde Nummmer:</h2>
+    <p id="predictedNumber">35</p> <!-- Placeholder for predicted number -->
+  </div>
 
-    <section id="statistics">
-        <h2>Statistieken</h2>
-        <p>Volgende gegevens worden automatisch bijgehouden:</p>
-        <ul>
-            <li>Aantal voorspellingen</li>
-            <li>Aantal correcte voorspellingen</li>
-            <li>Voorspelde plaats van het balletje</li>
-        </ul>
-        <div id="statsDisplay">
-            <!-- Statistieken worden hier weergegeven via JavaScript -->
-        </div>
-    </section>
+  <div class="surrounding-numbers">
+    <h3>Omliggende Nummers:</h3>
+    <ul>
+      <li>33</li>
+      <li>36</li>
+      <li>34</li>
+    </ul>
+  </div>
 
-    <footer>
-        <p>RouletteTracker © 2025</p>
-    </footer>
+  <div class="stats">
+    <div class="stat-item">
+      <p>Correcte Voorspellingen:</p>
+      <span id="correctPredictions">10</span>
+    </div>
+    <div class="stat-item">
+      <p>Totaal Aantal Voorspellingen:</p>
+      <span id="totalPredictions">50</span>
+    </div>
+    <div class="stat-item">
+      <p>Winstpercentage:</p>
+      <span id="winPercentage">20%</span>
+    </div>
+  </div>
 
-    <script>
-        // Get video element and button for camera start
-        const videoElement = document.getElementById('video');
-        const startButton = document.getElementById('startButton');
-        const framesContainer = document.getElementById('framesContainer');
-        const statsDisplay = document.getElementById('statsDisplay');
+  <button class="button" id="predictButton">Voorspel Volgende Nummmer</button>
+</div>
 
-        let stats = {
-            totalPredictions: 0,
-            correctPredictions: 0,
-            ballLocationPredictions: [],
-        };
+<script>
+  // Placeholder voor voorspelling van het balletje en omliggende nummers
+  const predictedNumber = document.getElementById("predictedNumber");
+  const surroundingNumbers = document.querySelector(".surrounding-numbers ul");
+  const correctPredictions = document.getElementById("correctPredictions");
+  const totalPredictions = document.getElementById("totalPredictions");
+  const winPercentage = document.getElementById("winPercentage");
 
-        // Start camera feed
-        startButton.addEventListener('click', () => {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    videoElement.srcObject = stream;
-                })
-                .catch((err) => {
-                    console.error("Camera access denied:", err);
-                });
-        });
+  // Dummy data voor statistieken
+  let correctCount = 10;
+  let totalCount = 50;
 
-        // Function to display frames (replace with actual frames if available)
-        function displayFrames() {
-            const framePath = 'frames/frame_'; // Assumed folder location of frames
-            for (let i = 1; i <= 10; i++) {
-                let imgElement = document.createElement('img');
-                imgElement.src = `${framePath}${i}.jpg`;
-                framesContainer.appendChild(imgElement);
-            }
-        }
+  // Update statistieken
+  function updateStats() {
+    correctPredictions.textContent = correctCount;
+    totalPredictions.textContent = totalCount;
+    winPercentage.textContent = `${Math.round((correctCount / totalCount) * 100)}%`;
+  }
 
-        // Function to simulate ball detection and update stats
-        function updateStats(predictedLocation, actualLocation) {
-            stats.totalPredictions++;
-            if (predictedLocation === actualLocation) {
-                stats.correctPredictions++;
-            }
+  // Genereer een willekeurig nummer en omliggende nummers voor de voorspelling
+  function generatePrediction() {
+    let randomNumber = Math.floor(Math.random() * 36); // Aangenomen roulette nummers 0-36
+    predictedNumber.textContent = randomNumber;
 
-            statsDisplay.innerHTML = `
-                <p>Totaal aantal voorspellingen: ${stats.totalPredictions}</p>
-                <p>Aantal correcte voorspellingen: ${stats.correctPredictions}</p>
-                <p>Voorspelde locatie van het balletje: ${predictedLocation}</p>
-            `;
-        }
+    // Genereer omliggende nummers
+    let surrounding = [];
+    for (let i = -1; i <= 1; i++) {
+      let surroundingNumber = (randomNumber + i + 36) % 36; // Houd nummers binnen het bereik van 0-36
+      surrounding.push(surroundingNumber);
+    }
 
-        // Simulate ball location prediction (in real use case, this would come from AI)
-        setInterval(() => {
-            const predictedLocation = Math.floor(Math.random() * 37); // Random number 0-36
-            const actualLocation = Math.floor(Math.random() * 37); // Random number 0-36 (for testing)
-            updateStats(predictedLocation, actualLocation);
-        }, 5000);
+    surroundingNumbers.innerHTML = surrounding.map(num => `<li>${num}</li>`).join('');
+  }
 
-        // Call displayFrames() to show initial frames when the page loads
-        displayFrames();
-    </script>
+  // Trigger voorspelling bij klikken op de knop
+  document.getElementById("predictButton").addEventListener("click", () => {
+    generatePrediction();
+    totalCount++;
+    // Simuleer een goede voorspelling (kan worden verbeterd met daadwerkelijke AI-berekeningen)
+    if (Math.random() < 0.2) { // 20% kans op een goede voorspelling
+      correctCount++;
+    }
+    updateStats();
+  });
+
+  // Initieel statistieken bijladen
+  updateStats();
+</script>
+
 </body>
-
 </html>
