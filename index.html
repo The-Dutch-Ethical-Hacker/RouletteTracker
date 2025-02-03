@@ -1,105 +1,110 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roulette Tracker</title>
-    <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        video { width: 100%; max-width: 600px; border: 2px solid #000; }
-        canvas { display: none; }
-    </style>
-
-    <!-- Voeg OpenCV.js toe -->
-    <script async src="https://docs.opencv.org/master/opencv.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RouletteTracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RouletteTracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
+    <header>
+        <h1>Welkom bij RouletteTracker</h1>
+        <p>Volg de bewegingen van het roulette-balletje in real-time en verbeter je voorspellingen!</p>
+    </header>
 
-    <h1>Roulette Balletje Tracker</h1>
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    <section id="camera">
+        <h2>Camera View</h2>
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="startButton">Start Camera</button>
+    </section>
 
-    <script>
-        // Wacht tot OpenCV is geladen
-        function checkOpenCV() {
-            if (cv && cv.getBuildInformation) {
-                console.log("✅ OpenCV.js is geladen!");
-                startCamera();
-            } else {
-                console.log("⏳ Wachten op OpenCV...");
-                setTimeout(checkOpenCV, 1000);
-            }
-        }
-        checkOpenCV();
+    <section id="videoSection">
+        <h2>Bekijk de Roulette Video</h2>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </section>
 
-        // Start de camera
-        async function startCamera() {
-            const video = document.getElementById('video');
+    <section id="framesSection">
+        <h2>Frames uit Video</h2>
+        <p>Bekijk enkele van de geanalyseerde frames:</p>
+        <div id="framesContainer">
+            <!-- Frames worden hier geladen met JavaScript -->
+        </div>
+    </section>
 
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                video.srcObject = stream;
-                video.onloadeddata = () => { processFrame(); };
-            } catch (error) {
-                alert("Camera-toegang geweigerd of niet beschikbaar.");
-                console.error(error);
-            }
-        }
+    <section id="statistics">
+        <h2>Statistieken</h2>
+        <p>Volgende gegevens worden automatisch bijgehouden:</p>
+        <ul>
+            <li>Aantal voorspellingen</li>
+            <li>Aantal correcte voorspellingen</li>
+            <li>Voorspelde plaats van het balletje</li>
+        </ul>
+        <div id="statsDisplay">
+            <!-- Statistieken worden hier weergegeven via JavaScript -->
+        </div>
+    </section>
 
-        // Verwerk het camerabeeld
-        function processFrame() {
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
+    <footer>
+        <p>RouletteTracker © 2025</p>
+    </footer>
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            console.log("🎥 Beeld wordt verwerkt...");
-
-            // Zet het beeld om naar een OpenCV Mat
-            let src = cv.imread(canvas);
-            let gray = new cv.Mat();
-            let blurred = new cv.Mat();
-            let circles = new cv.Mat();
-
-            // Zet om naar grijs en pas een blur toe
-            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-            cv.GaussianBlur(gray, blurred, new cv.Size(9, 9), 2);
-
-            // Test: zwart-wit filter voor meer contrast
-            cv.threshold(gray, gray, 100, 255, cv.THRESH_BINARY);
-
-            // Detecteer cirkels (roulette balletje)
-            cv.HoughCircles(blurred, circles, cv.HOUGH_GRADIENT, 1, 20, 50, 30, 5, 50);
-
-            console.log("🔍 Aantal gevonden cirkels:", circles.rows);
-
-            // Teken gevonden cirkels
-            for (let i = 0; i < circles.rows; i++) {
-                let circle = circles.data32F.slice(i * 3, i * 3 + 3);
-                let x = circle[0];
-                let y = circle[1];
-                let radius = circle[2];
-
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = "red";
-                ctx.lineWidth = 3;
-                ctx.stroke();
-            }
-
-            // Opruimen
-            src.delete();
-            gray.delete();
-            blurred.delete();
-            circles.delete();
-
-            // Blijf frames verwerken
-            requestAnimationFrame(processFrame);
-        }
-    </script>
-
+    <script src="script.js"></script>
 </body>
+
+<body>
+    <header>
+        <h1>Welkom bij RouletteTracker</h1>
+        <p>Volg de bewegingen van het roulette-balletje in real-time en verbeter je voorspellingen!</p>
+    </header>
+
+    <section id="camera">
+        <h2>Camera View</h2>
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="startButton">Start Camera</button>
+    </section>
+
+    <section id="videoSection">
+        <h2>Bekijk de Roulette Video</h2>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </section>
+
+    <section id="framesSection">
+        <h2>Frames uit Video</h2>
+        <p>Bekijk enkele van de geanalyseerde frames:</p>
+        <div id="framesContainer">
+            <!-- Frames worden hier geladen met JavaScript -->
+        </div>
+    </section>
+
+    <section id="statistics">
+        <h2>Statistieken</h2>
+        <p>Volgende gegevens worden automatisch bijgehouden:</p>
+        <ul>
+            <li>Aantal voorspellingen</li>
+            <li>Aantal correcte voorspellingen</li>
+            <li>Voorspelde plaats van het balletje</li>
+        </ul>
+        <div id="statsDisplay">
+            <!-- Statistieken worden hier weergegeven via JavaScript -->
+        </div>
+    </section>
+
+    <footer>
+        <p>RouletteTracker © 2025</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
 </html>
